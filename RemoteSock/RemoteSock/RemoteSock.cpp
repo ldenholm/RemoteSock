@@ -2,11 +2,21 @@
 //
 
 #include "RemoteSock.h"
+#include <boost/asio.hpp>
+#include <iostream>
+#include <thread>
 
-using namespace std;
+using boost::asio::ip::tcp;
 
 int main()
 {
-	cout << "Hello CMake." << endl;
+	
+	boost::asio::io_context ctx;
+	tcp::acceptor acceptor(ctx, tcp::endpoint(tcp::v4(), 20067));
+	std::cout << "Server accepting clients..." << std::endl;
+	while (true)
+	{
+		
+	}
 	return 0;
 }
