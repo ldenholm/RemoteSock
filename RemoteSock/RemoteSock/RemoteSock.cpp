@@ -14,7 +14,12 @@ int main()
 	boost::asio::io_context ctx;
 	tcp::acceptor acceptor(ctx, tcp::endpoint(tcp::v4(), 20067));
 	tcp::socket sckt(ctx);
-	acceptor.accept(sckt); 
 	std::cout << "Server halt until client accepted..." << std::endl;
+	acceptor.accept(sckt); 
+	std::cout << "Connection accepted from:" << std::endl;
+	while (true)
+	{
+
+	}
 	return 0;
 }
