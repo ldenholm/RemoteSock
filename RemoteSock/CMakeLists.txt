@@ -15,3 +15,4 @@ project ("RemoteSock")
 # Include sub-projects.
 add_subdirectory ("RemoteSock")
 add_subdirectory ("RSClient")
+add_subdirectory("RSNet")
