@@ -5,11 +5,21 @@
 
 namespace RSNet
 {
+	enum class MESSAGE_TYPE 
+	{
+		DEFAULT,
+		BROADCAST,
+		KICK,
+		BAN,
+		PLAYERUPDATE,
+		GAMEUPDATE
+	};
+
 	struct Packet
 	{
-		uint8_t header[32];
+		uint8_t header;
 		// guaranteed 1024 bytes
-		uint8_t body[1024];
+		char body[1024];
 		
 		/*void printBody()
 		{
@@ -17,7 +27,7 @@ namespace RSNet
 		}*/
 		
 		/*
-		* We want 2 overload operators.
+		* We want 2 overloaded operators.
 		* packet1 << "some string". Packs string into body.
 		* std::cout << packet1. Outputs packet1 like: "header: body".
 		* 
@@ -26,5 +36,19 @@ namespace RSNet
 		* A nice to have would be a third operator:
 		* packet1 << MESSAGE_TYPE. Packs message type enum into header.
 		*/ 
+
+		Packet& operator<<(const std::string& contents) 
+		{ 
+
+			if (contents.size() >= sizeof(body))
+			{
+				throw std::runtime_error("Body exceeds buffer.");
+			}
+
+			std::memcpy(body, contents.data(), contents.size());
+			body[contents.size()] = '\0';
+			header = static_cast<uint8_t>(MESSAGE_TYPE::DEFAULT);
+			return *this;
+		}
 	};
 }

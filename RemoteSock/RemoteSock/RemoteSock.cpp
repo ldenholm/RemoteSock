@@ -23,10 +23,5 @@ int main()
 	{
 
 	}
-
-	RSNet::Packet p{
-		.header = "hi header",
-		.body = "hello body"
-	};
 	return 0;
 }
