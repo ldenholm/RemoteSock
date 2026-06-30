@@ -1,2 +1,2 @@
 # RemoteSock
-Server Implementation with boost::asio
+N:1 Game Server Implementation in C++.
