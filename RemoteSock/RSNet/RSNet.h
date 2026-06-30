@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <boost/asio.hpp>
 
 namespace RSNet
 {
@@ -46,8 +47,8 @@ namespace RSNet
 			{
 				throw std::runtime_error("Body exceeds buffer.");
 			}
-
-			this->body_length = contents.size();
+			// guaranteed now after the check above.
+			this->body_length = static_cast<uint16_t>(contents.size());
 
 			// note: std::string.data() guarantees null terminator {for >= c++17, which ive set}
 			std::memcpy(body, contents.data(), contents.size());
@@ -57,6 +58,24 @@ namespace RSNet
 
 		friend std::ostream operator<<(std::ostream& os, const Packet& p);
 		
+	};
+
+	class GameServer
+	{
+	public:
+		GameServer(boost::asio::io_context& ctx, uint16_t listenPort);
+
+		// Delete default, move ctors.
+		GameServer() = delete;
+
+		GameServer(GameServer&& gs) = delete;
+
+		// delete move assignment operator.
+		GameServer& operator=(GameServer&& gs) = delete;
+	private:
+		boost::asio::io_context& _ctx;
+		boost::asio::ip::tcp::acceptor _acceptor;
+		std::unordered_map<uint8_t, boost::asio::ip::tcp::socket> connected_players;
 	};
 }
 
