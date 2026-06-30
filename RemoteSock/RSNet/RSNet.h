@@ -75,6 +75,9 @@ namespace RSNet
 	private:
 		boost::asio::io_context& _ctx;
 		boost::asio::ip::tcp::acceptor _acceptor;
-		std::unordered_map<uint8_t, boost::asio::ip::tcp::socket> connected_players;
+		std::unordered_map<uint16_t, boost::asio::ip::tcp::socket> _connected_players;
+		uint16_t _playerCount;
+
+		void acceptPlayers();
 	};
 }
