@@ -56,7 +56,7 @@ namespace RSNet
 			return *this;
 		}
 
-		friend std::ostream operator<<(std::ostream& os, const Packet& p);
+		friend std::ostream& operator<<(std::ostream& os, const RSNet::Packet& p);
 		
 	};
 
@@ -77,14 +77,4 @@ namespace RSNet
 		boost::asio::ip::tcp::acceptor _acceptor;
 		std::unordered_map<uint8_t, boost::asio::ip::tcp::socket> connected_players;
 	};
-}
-
-// Overload ostream insertion operator so we can easily log packet bodies.
-
-std::ostream& operator<<(std::ostream& os, const RSNet::Packet& p)
-{
-	os << "Packet length: " << p.body_length << " body: \n";
-	os.write(p.body, p.body_length);
-	os << "\n";
-	return os;
 }

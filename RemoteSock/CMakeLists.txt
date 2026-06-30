@@ -10,7 +10,7 @@ if (POLICY CMP0141)
 endif()
 
 project ("RemoteSock")
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Include sub-projects.
 add_subdirectory ("RemoteSock")

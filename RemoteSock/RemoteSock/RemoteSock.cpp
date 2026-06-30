@@ -11,8 +11,9 @@ using boost::asio::ip::tcp;
 
 int main()
 {
-	
 	boost::asio::io_context ctx;
+	uint16_t port = 20067;
+	RSNet::GameServer gs(ctx, port);
 	// todo: use async accept
 	tcp::acceptor acceptor(ctx, tcp::endpoint(tcp::v4(), 20067));
 	tcp::socket sckt(ctx);
