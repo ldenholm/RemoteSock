@@ -72,6 +72,8 @@ namespace RSNet
 
 		// delete move assignment operator.
 		GameServer& operator=(GameServer&& gs) = delete;
+
+		void run();
 	private:
 		boost::asio::io_context& _ctx;
 		boost::asio::ip::tcp::acceptor _acceptor;

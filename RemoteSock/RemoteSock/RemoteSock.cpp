@@ -14,10 +14,8 @@ int main()
 	boost::asio::io_context ctx;
 	uint16_t port = 20067;
 	RSNet::GameServer gs(ctx, port);
-	ctx.run();
-	while (true)
-	{
-
-	}
+	// invoke run on the gameserver obj, give gs its own thread.
+	std::thread gs_thread(&RSNet::GameServer::run, &gs);
+	gs_thread.join();
 	return 0;
 }

@@ -14,16 +14,6 @@ RSNet::GameServer::GameServer(io_context& ctx, uint16_t listenPort) :
 	acceptPlayers();
 }
 
-// Overload ostream insertion operator so we can easily log packet bodies.
-
-std::ostream& operator<<(std::ostream& os, const RSNet::Packet& p)
-{
-	os << "Packet length: " << p.body_length << " body: \n";
-	os.write(p.body, p.body_length);
-	os << "\n";
-	return os;
-}
-
 void RSNet::GameServer::acceptPlayers()
 {
 	// need this socket to establish tcp connections, 
@@ -49,4 +39,20 @@ void RSNet::GameServer::acceptPlayers()
 
 			acceptPlayers();
 		});
+}
+
+void RSNet::GameServer::run()
+{
+	_ctx.run();
+}
+
+
+// Overload ostream insertion operator so we can easily log packet bodies.
+
+std::ostream& operator<<(std::ostream& os, const RSNet::Packet& p)
+{
+	os << "Packet length: " << p.body_length << " body: \n";
+	os.write(p.body, p.body_length);
+	os << "\n";
+	return os;
 }
