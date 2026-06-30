@@ -44,7 +44,8 @@ void RSNet::GameServer::acceptPlayers()
 				std::cout << "Player: " << _playerCount << " accepted." << std::endl;
 				_playerCount++;
 			}
-			std::cout << ec.message() << std::endl;
+
+			if (ec) { std::cout << ec.message() << std::endl;  }
 
 			acceptPlayers();
 		});
