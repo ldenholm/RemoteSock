@@ -24,21 +24,16 @@ std::ostream& operator<<(std::ostream& os, const RSNet::Packet& p)
 	return os;
 }
 
-void async_accept_handler(const boost::system::error_code& ec, 
-	ip::tcp)
-{
-
-}
-
 void RSNet::GameServer::acceptPlayers()
 {
 	// need this socket to establish tcp connections, 
 	// it will be copied into the connected_players map
 	// GS owns this socket.
-	auto socket = std::make_unique<ip::tcp::socket>(_ctx);
+	auto socket = std::make_shared<ip::tcp::socket>(_ctx);
 
+	std::cout << "acceptor open: " << _acceptor.is_open() << '\n';
 	// socket unique owner ship, we need to call move to capture it in the lambda.
-	_acceptor.async_accept(*socket, [this, socket = std::move(socket)](const boost::system::error_code& ec) mutable
+	_acceptor.async_accept(*socket, [this, socket](const boost::system::error_code& ec) mutable
 		{
 			// note after the capture clause the auto socket var in outside scope becomes null.
 			if (!ec)

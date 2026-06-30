@@ -14,12 +14,7 @@ int main()
 	boost::asio::io_context ctx;
 	uint16_t port = 20067;
 	RSNet::GameServer gs(ctx, port);
-	// todo: use async accept
-	tcp::acceptor acceptor(ctx, tcp::endpoint(tcp::v4(), 20067));
-	tcp::socket sckt(ctx);
-	std::cout << "Server halt until client accepted..." << std::endl;
-	acceptor.accept(sckt); 
-	std::cout << "Connection accepted from:" << std::endl;
+	ctx.run();
 	while (true)
 	{
 
