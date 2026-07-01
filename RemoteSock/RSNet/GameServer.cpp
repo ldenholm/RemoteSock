@@ -11,10 +11,10 @@ RSNet::GameServer::GameServer(io_context& ctx, uint16_t listenPort) :
 	
 	// initialize map of players, push async listen work to the
 	// io queue.
-	acceptPlayers();
+	accept_players();
 }
 
-void RSNet::GameServer::acceptPlayers()
+void RSNet::GameServer::accept_players()
 {
 	// need this socket to establish tcp connections, 
 	// it will be copied into the connected_players map
@@ -37,13 +37,21 @@ void RSNet::GameServer::acceptPlayers()
 
 			if (ec) { std::cout << ec.message() << std::endl;  }
 
-			acceptPlayers();
+			accept_players();
 		});
 }
 
 void RSNet::GameServer::run()
 {
 	_ctx.run();
+}
+
+void RSNet::GameServer::broadcast(std::string&& message)
+{
+	// make_packet<broadcast>(std::string&& message)
+	// create the work to be completed, send a packet
+	// to ever member of the connected_players map.
+	// push the work to the NetOutQueue.
 }
 
 

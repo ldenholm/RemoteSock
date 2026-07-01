@@ -84,12 +84,14 @@ namespace RSNet
 		GameServer& operator=(GameServer&& gs) = delete;
 
 		void run();
+
+		void broadcast(std::string&& message);
 	private:
 		boost::asio::io_context& _ctx;
 		boost::asio::ip::tcp::acceptor _acceptor;
 		std::unordered_map<uint16_t, boost::asio::ip::tcp::socket> _connected_players;
 		uint16_t _playerCount;
 
-		void acceptPlayers();
+		void accept_players();
 	};
 }
