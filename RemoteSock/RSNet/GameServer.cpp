@@ -59,8 +59,8 @@ void RSNet::GameServer::broadcast(std::string&& message)
 
 std::ostream& operator<<(std::ostream& os, const RSNet::Packet& p)
 {
-	os << "Packet length: " << p.body_length << " body: \n";
-	os.write(p.body, p.body_length);
+	os << "Packet length: " << p.body_len_bytes << " body: \n";
+	os.write(p.body, p.body_len_bytes);
 	os << "\n";
 	return os;
 }

@@ -11,12 +11,12 @@
 #include <cstdint>
 #include <iostream>
 #include <boost/asio.hpp>
-
+#include <limits>
 
 
 namespace RSNet
 {
-	enum class MESSAGE_TYPE 
+	enum class MESSAGE_TYPE : uint8_t
 	{
 		DEFAULT,
 		BROADCAST,
@@ -28,16 +28,13 @@ namespace RSNet
 
 	struct Packet
 	{
+		static constexpr std::size_t MAX_SIZE_BODY = 1024;
+
 		uint8_t header;
 		// guaranteed 1024 bytes
 		char body[1024];
-		uint16_t body_length;
+		uint16_t body_len_bytes;
 		// so we can track what we've actually used, it will be easier when tx, rx.
-		
-		/*void printBody()
-		{
-			std::cout << static_cast()
-		}*/
 		
 		/*
 		* We want 2 overloaded operators.
@@ -58,7 +55,7 @@ namespace RSNet
 				throw std::runtime_error("Body exceeds buffer.");
 			}
 			// guaranteed now after the check above.
-			this->body_length = static_cast<uint16_t>(contents.size());
+			this->body_len_bytes = static_cast<uint16_t>(contents.size());
 
 			// note: std::string.data() guarantees null terminator {for >= c++17, which ive set}
 			std::memcpy(body, contents.data(), contents.size());
@@ -68,7 +65,25 @@ namespace RSNet
 
 		friend std::ostream& operator<<(std::ostream& os, const RSNet::Packet& p);
 		
+		// make sure compiler picks up on a different body size.
+		static_assert(Packet::MAX_SIZE_BODY <= std::numeric_limits<uint16_t>::max());
 	};
+
+	template<MESSAGE_TYPE T> 
+	Packet make_packet(const std::string& message)
+	{
+		if (message.size() > Packet::MAX_SIZE_BODY)
+		{
+			throw std::runtime_error("Message too large for a single packet, split!");
+		}
+
+		auto len = static_cast<uint16_t>(message.size());
+		Packet p{};
+		p.header = static_cast<uint8_t>(T);
+		std::memcpy(p.body, message.data(), len);
+		p.body_len_bytes = len;
+		return p;
+	}
 
 	class GameServer
 	{
