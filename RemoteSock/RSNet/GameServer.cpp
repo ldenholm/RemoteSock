@@ -4,9 +4,10 @@
 
 using namespace boost::asio;
 
-RSNet::GameServer::GameServer(io_context& ctx, uint16_t listenPort) :
+RSNet::GameServer::GameServer(io_context& ctx, uint16_t listenPort, 
+	RSNet::Queue::NetInQueue& netinqueue, RSNet::Queue::NetOutQueue& netoutqueue) :
 	_ctx(ctx), _acceptor(ctx, ip::tcp::endpoint(ip::tcp::v4(), listenPort)),
-	_playerCount(1)
+	_netinqueue(netinqueue), _netoutqueue(netoutqueue), _playerCount(1)
 {
 	
 	// initialize map of players, push async listen work to the
@@ -46,12 +47,18 @@ void RSNet::GameServer::run()
 	_ctx.run();
 }
 
-void RSNet::GameServer::broadcast(std::string&& message)
+void RSNet::GameServer::broadcast(const std::string& message)
 {
 	// make_packet<broadcast>(std::string&& message)
 	// create the work to be completed, send a packet
 	// to ever member of the connected_players map.
 	// push the work to the NetOutQueue.
+
+	Packet bc_packet = make_packet<MESSAGE_TYPE::BROADCAST>(message);
+	for (auto & [playerid, playersocket] : _connected_players)
+	{
+		// we push <ip::tcp::socket*, Packet*> to net out queue buffer.
+	}
 }
 
 

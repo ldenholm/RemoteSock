@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/asio.hpp>
+#include "../RSNet.h"
 
 
 /*
@@ -35,7 +36,10 @@ namespace RSNet::Queue
 		NetOutQueue(boost::asio::io_context& ctx);
 
 		NetOutQueue() = delete;
+
+		void send_packet_to_socket(const Packet& p, const boost::asio::ip::tcp::socket& socket);
 	private:
 		boost::asio::io_context& _ctx;
+		std::unordered_map<const uint16_t&, const boost::asio::ip::tcp::socket&> _outbuffer;
 	};
 }

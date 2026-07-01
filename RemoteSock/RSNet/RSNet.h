@@ -12,6 +12,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <limits>
+#include "Queue/RSNetQueue.h"
 
 
 namespace RSNet
@@ -88,7 +89,8 @@ namespace RSNet
 	class GameServer
 	{
 	public:
-		GameServer(boost::asio::io_context& ctx, uint16_t listenPort);
+		GameServer(boost::asio::io_context& ctx, uint16_t listenPort,
+			RSNet::Queue::NetInQueue& netinqueue, RSNet::Queue::NetOutQueue& netoutqueue);
 
 		// Delete default, move ctors.
 		GameServer() = delete;
@@ -100,12 +102,15 @@ namespace RSNet
 
 		void run();
 
-		void broadcast(std::string&& message);
+		void broadcast(const std::string& message);
 	private:
 		boost::asio::io_context& _ctx;
 		boost::asio::ip::tcp::acceptor _acceptor;
 		std::unordered_map<uint16_t, boost::asio::ip::tcp::socket> _connected_players;
+		RSNet::Queue::NetInQueue& _netinqueue;
+		RSNet::Queue::NetOutQueue& _netoutqueue;
 		uint16_t _playerCount;
+
 
 		void accept_players();
 	};
