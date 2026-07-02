@@ -4,10 +4,9 @@
 
 using namespace boost::asio;
 
-RSNet::GameServer::GameServer(io_context& ctx, uint16_t listenPort, 
-	RSNet::Queue::NetInQueue& netinqueue, RSNet::Queue::NetOutQueue& netoutqueue) :
+RSNet::GameServer::GameServer(io_context& ctx, uint16_t listenPort) :
 	_ctx(ctx), _acceptor(ctx, ip::tcp::endpoint(ip::tcp::v4(), listenPort)),
-	_netinqueue(netinqueue), _netoutqueue(netoutqueue), _playerCount(1)
+	_playerCount(1)
 {
 	
 	// initialize map of players, push async listen work to the
@@ -42,24 +41,30 @@ void RSNet::GameServer::accept_players()
 		});
 }
 
+std::unordered_map<uint16_t, boost::asio::ip::tcp::socket&> RSNet::GameServer::get_connected_players()
+{
+	return _connected_players;
+}
+
 void RSNet::GameServer::run()
 {
 	_ctx.run();
 }
 
-void RSNet::GameServer::broadcast(const std::string& message)
-{
+//void RSNet::GameServer::broadcast(const std::string& message)
+//{
 	// make_packet<broadcast>(std::string&& message)
 	// create the work to be completed, send a packet
 	// to ever member of the connected_players map.
 	// push the work to the NetOutQueue.
 
-	Packet bc_packet = make_packet<MESSAGE_TYPE::BROADCAST>(message);
-	for (auto & [playerid, playersocket] : _connected_players)
-	{
+	//Packet bc_packet = make_packet<MESSAGE_TYPE::BROADCAST>(message);
+	//for (auto & [playerid, playersocket] : _connected_players)
+	//{
 		// we push <ip::tcp::socket*, Packet*> to net out queue buffer.
-	}
-}
+		// dont do this here, simply dispatch broadcast event to net out queue.
+	//}
+//}
 
 
 // Overload ostream insertion operator so we can easily log packet bodies.

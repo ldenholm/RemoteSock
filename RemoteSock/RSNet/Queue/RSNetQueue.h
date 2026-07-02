@@ -1,7 +1,7 @@
 #pragma once
 
 #include <boost/asio.hpp>
-#include "../RSNet.h"
+#include <RSNet.h>
 
 
 /*
@@ -22,24 +22,27 @@ namespace RSNet::Queue
 	class NetInQueue
 	{
 	public:
-		NetInQueue(boost::asio::io_context& ctx);
+		NetInQueue(boost::asio::io_context& ctx, RSNet::GameServer& gs);
 
 		NetInQueue() = delete;
 	private:
 		boost::asio::io_context& _ctx;
+		RSNet::GameServer& _gs;
 	};
 
 	// Class to handle transmission queue work.
 	class NetOutQueue
 	{
 	public:
-		NetOutQueue(boost::asio::io_context& ctx);
+		NetOutQueue(boost::asio::io_context& ctx, RSNet::GameServer& gs);
 
 		NetOutQueue() = delete;
 
-		void send_packet_to_socket(const Packet& p, const boost::asio::ip::tcp::socket& socket);
 	private:
 		boost::asio::io_context& _ctx;
-		std::unordered_map<const uint16_t&, const boost::asio::ip::tcp::socket&> _outbuffer;
-	};
+		RSNet::GameServer& _gs;
+
+		//void send_packet_to_socket(const Packet& p, const boost::asio::ip::tcp::socket& socket);
+		void broadcast(const std::string& message);
+	}
 }

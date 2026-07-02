@@ -1,3 +1,13 @@
+/*
+* Okay I need to rethink how this is all connected. The dedicated global NetIn/NetOut
+* queues was a cute idea but its not quite going to work because passing around the sockets
+* like I just tried is messy. I think I need a session style class per socket so its
+* responsible for all read/write actions on the sockets and encapsulates a connection,
+* that way GS can simply have a map of connection objects and then push broadcasts and
+* requests to the connection which in turn will process it.
+
+*/
+
 #pragma once
 
 #ifndef WINVER
@@ -12,6 +22,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <limits>
+#include <queue>
 #include "Queue/RSNetQueue.h"
 
 
@@ -89,8 +100,7 @@ namespace RSNet
 	class GameServer
 	{
 	public:
-		GameServer(boost::asio::io_context& ctx, uint16_t listenPort,
-			RSNet::Queue::NetInQueue& netinqueue, RSNet::Queue::NetOutQueue& netoutqueue);
+		GameServer(boost::asio::io_context& ctx, uint16_t listenPort);
 
 		// Delete default, move ctors.
 		GameServer() = delete;
@@ -100,18 +110,38 @@ namespace RSNet
 		// delete move assignment operator.
 		GameServer& operator=(GameServer&& gs) = delete;
 
+		std::unordered_map<uint16_t, boost::asio::ip::tcp::socket&> get_connected_players();
+
 		void run();
 
-		void broadcast(const std::string& message);
+		//void broadcast(const std::string& message);
 	private:
 		boost::asio::io_context& _ctx;
 		boost::asio::ip::tcp::acceptor _acceptor;
-		std::unordered_map<uint16_t, boost::asio::ip::tcp::socket> _connected_players;
-		RSNet::Queue::NetInQueue& _netinqueue;
-		RSNet::Queue::NetOutQueue& _netoutqueue;
+		std::unordered_map<uint16_t, boost::asio::ip::tcp::socket&> _connected_players;
 		uint16_t _playerCount;
 
 
 		void accept_players();
+	};
+
+	class Connection
+	{
+	public:
+		Connection(boost::asio::ip::tcp::socket socket);
+
+		Connection() = delete;
+
+		Connection(Connection&& c) = delete;
+
+		Connection& operator=(Connection&& c) = delete;
+
+		void send();
+
+		void read();
+
+	private:
+		boost::asio::ip::tcp::socket _socket;
+		bool _writing;
 	};
 }

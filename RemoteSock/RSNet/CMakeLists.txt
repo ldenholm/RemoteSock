@@ -6,7 +6,7 @@ find_package(Boost 1.89 REQUIRED)
 
 add_subdirectory(Queue)
 
-add_library(RSNet "GameServer.cpp" "RSNet.h")
+add_library(RSNet "GameServer.cpp" "RSNet.h" "Connection.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET RemoteSock PROPERTY CXX_STANDARD 20)
