@@ -5,7 +5,12 @@
 
 using namespace boost::asio;
 
-RSNet::Connection::Connection(ip::tcp::socket socket) : _socket(std::move(socket))
+RSNet::Connection::Connection(io_context& ctx) : _socket(ctx), _writing(false)
 {
-	_writing = false;
+	// Connection is the owner of its socket.
+}
+
+boost::asio::ip::tcp::socket& RSNet::Connection::socket()
+{
+	return _socket;
 }

@@ -23,7 +23,6 @@
 #include <boost/asio.hpp>
 #include <limits>
 #include <queue>
-#include "Queue/RSNetQueue.h"
 
 
 namespace RSNet
@@ -97,6 +96,28 @@ namespace RSNet
 		return p;
 	}
 
+	class Connection
+	{
+	public:
+		Connection(boost::asio::io_context& ctx);
+
+		Connection() = delete;
+
+		Connection(Connection&& c) = delete;
+
+		Connection& operator=(Connection&& c) = delete;
+
+		boost::asio::ip::tcp::socket& socket();
+
+		void send();
+
+		void read();
+
+	private:
+		boost::asio::ip::tcp::socket _socket;
+		bool _writing;
+	};
+
 	class GameServer
 	{
 	public:
@@ -110,38 +131,17 @@ namespace RSNet
 		// delete move assignment operator.
 		GameServer& operator=(GameServer&& gs) = delete;
 
-		std::unordered_map<uint16_t, boost::asio::ip::tcp::socket&> get_connected_players();
-
 		void run();
 
 		//void broadcast(const std::string& message);
 	private:
 		boost::asio::io_context& _ctx;
 		boost::asio::ip::tcp::acceptor _acceptor;
-		std::unordered_map<uint16_t, boost::asio::ip::tcp::socket&> _connected_players;
+		std::unordered_map<uint16_t, std::unique_ptr<Connection>> _connected_players;
 		uint16_t _playerCount;
 
 
 		void accept_players();
 	};
 
-	class Connection
-	{
-	public:
-		Connection(boost::asio::ip::tcp::socket socket);
-
-		Connection() = delete;
-
-		Connection(Connection&& c) = delete;
-
-		Connection& operator=(Connection&& c) = delete;
-
-		void send();
-
-		void read();
-
-	private:
-		boost::asio::ip::tcp::socket _socket;
-		bool _writing;
-	};
 }

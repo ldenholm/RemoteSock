@@ -19,18 +19,23 @@ void RSNet::GameServer::accept_players()
 	// need this socket to establish tcp connections, 
 	// it will be copied into the connected_players map
 	// GS owns this socket.
-	auto socket = std::make_shared<ip::tcp::socket>(_ctx);
+	//auto socket = std::make_unique<ip::tcp::socket>(_ctx);
+	auto connection = std::make_unique<Connection>(_ctx);
+	auto& socket = connection->socket();
+
+	std::cout << "socket open: " << socket.is_open() << '\n';
 
 	std::cout << "acceptor open: " << _acceptor.is_open() << '\n';
 	// socket unique owner ship, we need to call move to capture it in the lambda.
-	_acceptor.async_accept(*socket, [this, socket](const boost::system::error_code& ec) mutable
+	_acceptor.async_accept(socket, [this, connection = std::move(connection)](const boost::system::error_code& ec) mutable
 		{
-			// note after the capture clause the auto socket var in outside scope becomes null.
+			// note after the capture clause the outside scope socket ptr becomes null.
 			if (!ec)
 			{
 				// accept connection, move socket to map.
 				// todo: enforce unique IP.
-				_connected_players.emplace(_playerCount, std::move(*socket));
+				
+				_connected_players.emplace(_playerCount, std::move(connection));
 				std::cout << "Player: " << _playerCount << " accepted." << std::endl;
 				_playerCount++;
 			}
@@ -39,11 +44,6 @@ void RSNet::GameServer::accept_players()
 
 			accept_players();
 		});
-}
-
-std::unordered_map<uint16_t, boost::asio::ip::tcp::socket&> RSNet::GameServer::get_connected_players()
-{
-	return _connected_players;
 }
 
 void RSNet::GameServer::run()
